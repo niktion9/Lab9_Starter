@@ -85,9 +85,16 @@
       <button>Console Trace</button>
       <button>Trigger a Global Error</button>
     </section>
+
   </main>
 
   <script>
+    class CalculationError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "CalculationError";
+      }
+    }
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
       e.preventDefault();
@@ -95,13 +102,108 @@
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      try {
+        if (firstNum.trim() === "" || secondNum.trim() === "") {
+          throw new CalculationError("Both numbers must be provided!");
+        }
+
+        let result = eval(`${firstNum} ${operator} ${secondNum}`);
+        if (isNaN(result)) {
+          throw new CalculationError("The result is not a number.");
+        }
+
+        output.innerHTML = result;
+      } 
+      catch (err) {
+        console.error("Caught an error during calculation:", err);
+        output.innerHTML = "Error: " + err.message;
+      }
+      finally {
+        console.log("Calculation attempt completed.");
+      } 
+
+      //output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
     });
 
-    let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
+  let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
     // Start your code here
     // You may move this JS to another file if you wish
+    errorBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const label = btn.textContent.trim();
+
+        if (label === "Console Log") {
+          console.log("This is a console.log message with a number:", 42);
+        } 
+        else if (label === "Console Error") {
+          console.error("This is a simulated error message.");
+        } 
+        else if (label === "Console Count") {
+          console.count("Count button clicked");
+        } 
+        else if (label === "Console Warn") {
+          console.warn("This is a warning — be careful!");
+        } 
+        else if (label === "Console Assert") {
+          console.assert(false, "Assertion failed: false is not true");
+        } 
+        else if (label === "Console Clear") {
+          console.clear();
+        } 
+        else if (label === "Console Dir") {
+          console.dir(document.querySelector('form'));
+        } 
+        else if (label === "Console dirxml") {
+          console.dirxml(document.querySelector('main'));
+        } 
+        else if (label === "Console Group Start") {
+          console.group("Group Demo");
+          console.log("First inside group");
+          console.log("Second inside group");
+        } 
+        else if (label === "Console Group End") {
+          console.groupEnd();
+        } 
+        else if (label === "Console Table") {
+          console.table([
+            ["Name", "Role"],
+            ["Nikitha", "Student"],
+            ["Yash", "Mentor"]
+          ]);
+        } 
+        else if (label === "Start Timer") {
+          console.time("Example Timer");
+        } 
+        else if (label === "End Timer") {
+          console.timeEnd("Example Timer");
+        } 
+        else if (label === "Console Trace") {
+          function x() { y(); }
+          function y() { z(); }
+          function z() { console.trace("Trace call stack:"); }
+          x();
+        } 
+        else if (label === "Trigger a Global Error") {
+          notARealFunction(); 
+        }
+      });
+    });
+  window.addEventListener("error", function (event) {
+    console.log("Global error caught:");
+    console.log("Message:", event.message);
+    console.log("Source:", event.filename);
+    console.log("Line:", event.lineno);
+    console.log("Column:", event.colno);
+    console.log("Error object:", event.error);
+  );
+  </script>
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "5c18ce5911d74f83932486a4bdf7eb1e"
+      // for more configuration options, see https://docs.trackjs.com
+    });
   </script>
 </body>
 
